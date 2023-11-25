@@ -5,6 +5,12 @@
 #ifndef PTEDITOR_MODULE_H
 #define PTEDITOR_MODULE_H
 
+#ifdef __cplusplus
+#include <cstddef>
+#else
+#include <stddef.h>
+#endif
+
 #if defined(__linux__) || defined(__linux) || defined(__unix__) || defined(LINUX) || defined(UNIX)
 #define LINUX
 #endif

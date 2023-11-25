@@ -13,6 +13,10 @@
 #include <linux/proc_fs.h>
 #include <linux/kprobes.h>
 
+#ifndef X86_FEATURE_INVPCID_SINGLE
+#define X86_FEATURE_INVPCID_SINGLE (7 * 32 + 7)
+#endif
+
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0)
 #include <linux/mmap_lock.h>
 #endif
@@ -332,7 +336,11 @@ static int resolve_vm(size_t addr, vm_t* entry, int lock) {
   entry->valid |= PTEDIT_VALID_MASK_PMD;
 
   /* Map PTE (page table entry) */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 5, 0)
+  entry->pte = pte_offset_kernel(entry->pmd, addr);
+#else
   entry->pte = pte_offset_map(entry->pmd, addr);
+#endif
   if (entry->pte == NULL || pmd_large(*(entry->pmd))) {
     entry->pte = NULL;
     goto error_out;
